@@ -1,0 +1,3 @@
+[submodule "rPyControl"]
+	path = rPyControl
+	url = https://github.com/SimkaNed/rPyControl
