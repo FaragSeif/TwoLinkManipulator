@@ -19,7 +19,7 @@ t_log = 1e-2
 tl = 0
 tc = 0
 
-alpha, dalpha = 0, 0
+alpha, dalpha, ddalpha= 0, 0, 0
 
 kp = 6.
 kd = 1.1
@@ -33,11 +33,11 @@ try:
         t = perf_counter() - t0
 
         if t - tc >= t_con:
-            # alpha_d, dalpha_d = 0.5*sin(t), 0.5*cos(t)
-            alpha_d, dalpha_d = pi/6, 0
+            # alpha_d, dalpha_d,  ddalpha_d = sin(t*2), 2*cos(t*2), -4*sin(t*2)
+            alpha_d, dalpha_d = 0, 0
             alpha = motor.state['pos']
             dalpha = motor.state['vel']
-            e, de = alpha_d - alpha, dalpha_d - dalpha
+            e, de= alpha_d - alpha, dalpha_d - dalpha
             u = kp*e + kd*de
             motor.set_torque(u)
             

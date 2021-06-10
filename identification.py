@@ -4,7 +4,6 @@ from time import perf_counter
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import pi , sin, cos
-from sympy import *
 
 
 # motor init
@@ -21,24 +20,11 @@ t0 = perf_counter()
 
 # smapling time and control time
 t_con = 1./500.
-t_log = 1./500.
-tl = 0
 tc = 0
+counter = 1
 
 # initial values
 alpha, dalpha = 0, 0
-
-kp = 6.
-kd = 1.1
-
-# b, i = symbols('b i')
-# b_i = Eq(-b/i)
-
-# A = np.array([[0, 1],
-#               [0, b_i]])
-
-# A_d_approx = np.eye(2) + T*A 
-# B_d_approx = T*B
 
 try:
     
@@ -49,33 +35,82 @@ try:
         t = perf_counter() - t0
 
         if t - tc >= t_con:
-            alpha = motor.state['pos']
-            dalpha = motor.state['vel']
-            u = 0.45*sin(t*2)
-            motor.set_torque(u)
+            if counter <= 2500:
+                alpha = motor.state['pos']
+                dalpha = motor.state['vel']
+                u = 0.40*sin(t*4)
+                motor.set_torque(u)
+            elif counter <= 5000:
+                alpha = motor.state['pos']
+                dalpha = motor.state['vel']
+                if counter % 1000 < 500:
+                    u = 0.3
+                else:
+                    u = -0.3
+                motor.set_torque(u)
+            elif counter <= 7500:
+                alpha = motor.state['pos']
+                dalpha = motor.state['vel']
+                u = 0.4*sin(t*12)
+                motor.set_torque(u)
+            elif counter <= 10000:
+                alpha = motor.state['pos']
+                dalpha = motor.state['vel']
+                if counter % 100 < 50:
+                    u = 0.5
+                else:
+                    u = -0.5
+                motor.set_torque(u)
+            elif counter <= 12500:
+                alpha = motor.state['pos']
+                dalpha = motor.state['vel']
+                u = 0.90*sin(t*4)
+                motor.set_torque(u)
+            elif counter <= 15000:
+                alpha = motor.state['pos']
+                dalpha = motor.state['vel']
+                if counter % 500 < 250:
+                    u = 1
+                else:
+                    u = -1
+                motor.set_torque(u)
+            elif counter <= 17500:
+                alpha = motor.state['pos']
+                dalpha = motor.state['vel']
+                u = 0.90*sin(t*12)
+                motor.set_torque(u)
+            elif counter <= 20000:
+                alpha = motor.state['pos']
+                dalpha = motor.state['vel']
+                if counter % 100 < 50:
+                    u = 1
+                else:
+                    u = -1
+                motor.set_torque(u)
+            else:
+                break
             
-            # print(f"time {round(t, 4)}, pos: {round(alpha, 3)}, speed: {round(dalpha, 3)}")
-            # print(motor.state['tor'])
-
             control.append(u)
             time.append(t)
             angle.append(alpha)
             velocity.append(dalpha)
 
             tc = t
+            counter = counter + 1
 
 
 except KeyboardInterrupt:
     motor.set_torque(0)
     motor.disable()
 
-csv_data = np.vstack((angle, velocity, control))
+csv_data = np.vstack((time ,angle, velocity, control))
 csv_data_t = csv_data.transpose()
-np.savetxt('test.csv', csv_data_t, delimiter=',')
+np.savetxt('highFreqCont1.csv', csv_data_t, delimiter=',')
 
 plt.figure(figsize=(7, 3))
 plt.plot(time, angle, 'r', label=r'$\alpha$')
 plt.plot(time, velocity, 'b', label='vel')
+plt.plot(time, control, 'g', label='ctrl')
 plt.ylabel(r'Angle $\alpha$ (rad)')
 plt.xlabel(r'Time $t$ (s)')
 plt.grid(color='gray', linestyle='--', alpha=0.7)
